@@ -1,6 +1,3 @@
-#include <iostream>
-#include <sstream>
-
 #include "dayofweek.h"
 
 int dayForGC(int day, int year, int month) {

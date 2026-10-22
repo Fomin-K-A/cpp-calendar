@@ -44,7 +44,6 @@ void printMonth(int month, int year) {
   }
 }
 
-
 void printYear(int year) {
   std::cout << year << '\n';
 
