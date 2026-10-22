@@ -32,16 +32,15 @@ void printMonth(int month, int year) {
     ++column;
 
     if (column == 7) {
-      std::cout << '\n';
       column = 0;
-    } else {
+      if (i != days_in_month) {
+        std::cout << '\n';
+      }
+    } else if (i != days_in_month) {
       std::cout << ' ';
     }
   }
 
-  if (column != 0) {
-    std::cout << '\n';
-  }
 }
 
 void printYear(int year) {
