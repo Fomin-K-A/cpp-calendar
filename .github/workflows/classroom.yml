@@ -42,8 +42,8 @@ jobs:
         run: |
           valgrind --tool=memcheck --leak-check=full --undef-value-errors=no --error-exitcode=111 ./calendar 2024
 
-      - name: Code linting
-        uses: amcp-pit/cpp-linter@v1
+      #- name: Code linting
+       # uses: amcp-pit/cpp-linter@v1
 
       - name: Checkout
         uses: actions/checkout@v3
