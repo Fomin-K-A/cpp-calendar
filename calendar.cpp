@@ -1,6 +1,8 @@
-#include <iostream>
 
 #include "calendar.h"
+
+#include <iostream>
+
 #include "dayofweek.h"
 
 const char* Months[] = {"January",   "February", "March",    "April",
@@ -15,50 +17,54 @@ void PrintNumber(int n) {
 }
 
 void printMonth(int month, int year) {
-  int start_day = dayForGC(1, year, month);
-
   std::cout << year << '\n';
-  std::cout << Months[month-1] << '\n';
-  std::cout << "Su Mo Tu We Th Fr Sa" << '\n';
+  std::cout << Months[month - 1] << '\n';
+  std::cout << "Su Mo Tu We Th Fr Sa\n";
 
-  for (int i = 0; i < start_day; i++) {
+  int first = dayForGC(1, year, month);
+  int count = DaysInMonth(month, year);
+
+  for (int i = 0; i < first; ++i) {
     std::cout << "   ";
   }
 
-  int column = start_day;
-  int days_in_month = DaysInMonth(month, year);
-  for (int i = 1; i <= days_in_month; i++) {
-    PrintNumber(i);
-    ++column;
+  for (int day = 1; day <= count; ++day) {
+    PrintNumber(day);
 
-    if (column == 7) {
-      column = 0;
-      if (i != days_in_month) {
-        std::cout << '\n';
-      }
-    } else if (i != days_in_month) {
+    int weekday = (first + day - 1) % 7;
+
+    if (weekday == 6) {
+      std::cout << '\n';
+    } else if (day != count) {
       std::cout << ' ';
     }
   }
 
+  if ((first + count) % 7 != 0) {
+    std::cout << '\n';
+  }
 }
 
 void printYear(int year) {
   std::cout << year << '\n';
 
-  for (int i = 1; i <= 12; i += 3) {
-    for (int j = i; j < i + 3; j++) {
-      const char* name = Months[j - 1];
+  for (int group = 0; group < 12; group += 3) {
+    if (group != 0) {
+      std::cout << '\n';
+    }
+
+    for (int m = 0; m < 3; ++m) {
+      const char* name = Months[group + m];
 
       int len = 0;
       while (name[len] != '\0') {
-        len++;
+        ++len;
       }
 
       std::cout << name;
 
-      if (j != i + 2) {
-        for (int k = len; k < 22; k++) {
+      if (m != 2) {
+        for (int k = len; k < 22; ++k) {
           std::cout << ' ';
         }
       }
@@ -66,61 +72,67 @@ void printYear(int year) {
 
     std::cout << '\n';
 
-    for (int j = 0; j < 3; j++) {
-      std::cout << "Su Mo Tu We Th Fr Sa";
-
-      if (j != 2) {
+    for (int m = 0; m < 3; ++m) {
+      if (m != 0) {
         std::cout << "  ";
       }
+
+      std::cout << "Su Mo Tu We Th Fr Sa";
     }
 
     std::cout << '\n';
 
-    int days_in_month[3];
+    int first[3];
+    int count[3];
+    int weeks = 0;
 
-    int start_day[3];
+    for (int m = 0; m < 3; ++m) {
+      first[m] = dayForGC(1, year, group + m + 1);
+      count[m] = DaysInMonth(group + m + 1, year);
 
-    int max_week = 0;
+      int n = (first[m] + count[m] + 6) / 7;
 
-    for (int j = 0; j < 3; j++) {
-      int month = i + j;
-
-      days_in_month[j] = DaysInMonth(month, year);
-      start_day[j] = dayForGC(1, year, month);
-
-      int weeks = (start_day[j] + days_in_month[j] + 6) / 7;
-
-      if (weeks > max_week) {
-        max_week = weeks;
+      if (n > weeks) {
+        weeks = n;
       }
     }
 
-    for (int week = 0; week < max_week; week++) {
-      for (int j = 0; j < 3; j++) {
-        for (int day = 0; day < 7; day++) {
-          int number = week * 7 + day - start_day[j] + 1;
+    for (int w = 0; w < weeks; ++w) {
+      char line[65];
 
-          if (number < 1 || number > days_in_month[j]) {
-            std::cout << "  ";
-          } else {
-            PrintNumber(number);
+      for (int k = 0; k < 64; ++k) {
+        line[k] = ' ';
+      }
+
+      line[64] = '\0';
+
+      for (int m = 0; m < 3; ++m) {
+        for (int d = 0; d < 7; ++d) {
+          int number = w * 7 + d - first[m] + 1;
+
+          if (number < 1 || number > count[m]) {
+            continue;
           }
 
-          if (day != 6) {
-            std::cout << ' ';
-          }
-        }
+          int pos = m * 22 + d * 3;
 
-        if (j != 2) {
-          std::cout << "  ";
+          if (number >= 10) {
+            line[pos] = char('0' + number / 10);
+          }
+
+          line[pos + 1] = char('0' + number % 10);
         }
       }
 
-      std::cout << '\n';
-    }
+      int len = 64;
 
-    if (i != 10) {
-      std::cout << "\n";
+      while (len > 0 && line[len - 1] == ' ') {
+        --len;
+      }
+
+      line[len] = '\0';
+
+      std::cout << line << '\n';
     }
   }
 }
