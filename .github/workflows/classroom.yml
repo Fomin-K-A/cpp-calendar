@@ -22,7 +22,12 @@ jobs:
 
       - name: Build
         run: |
-          !(grep -qwRE --include=*.{cc,cpp,h} '<vector>|<list>|<algorithm>|<stack>|<queue>|<deque>|<set>|<map>|<string>' ./*) && (echo "Build...") || (echo "Forbidden STL containers" && exit 9)
+          if grep -qwRE --include='*.cc' --include='*.cpp' --include='*.h' '<vector>|<list>|<algorithm>|<stack>|<queue>|<deque>|<set>|<map>|<string>' .; then
+            echo "Forbidden STL containers"
+            exit 9
+          fi
+
+          echo "Build..."
           clang++ -pedantic-errors -std=c++17 main.cpp calendar.cpp dayofweek.cpp -o calendar
 
       - name: Autograding
@@ -39,9 +44,6 @@ jobs:
 
       - name: Code linting
         uses: amcp-pit/cpp-linter@v1
-        with:
-          extra-args-before: '-xc++'
-          after-args: '-DCMAKE_EXPORT_COMPILE_COMMANDS=ON'
 
       - name: Checkout
         uses: actions/checkout@v3
