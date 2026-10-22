@@ -21,7 +21,7 @@ jobs:
       - name: Build
         run: |
              !(grep -qwRE --include=*.{cc,cpp,h} '<vector>|<list>|<algorithm>|<stack>|<queue>|<deque>|<set>|<map>|<string>' ./* ) &&  (echo \"Build...\" )  || ( echo \"Forbiden STL containers\" && exit 9 )
-             clang++ -pedantic-errors -std=c++17 calendar.cpp -o calendar
+             clang++ -pedantic-errors -std=c++17 main.cpp calendar.cpp dayofweek.cpp -o calendar
       - name: Autograding
         uses: amcp-pit/autograding@v1
       - name: Memory leaks
